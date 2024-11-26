@@ -4,21 +4,38 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
+definePageMeta({
+    middleware: 'guest'
+})
+
 const supabase = useSupabaseClient()
 const credentials = ref<Credentials>({
-  name: "",
-  lastname: "",
+  username: "",
   email: "",
   password: ""
 })
 
 async function onSubmit() {
-  let { data, error } = await supabase.auth.signUo({
-    email: credentials.value.email,
-    password: credentials.value.password
-  })
+  try {
+    const { data, error } = await supabase.auth.signUp({
+      email: credentials.value.email,
+      password: credentials.value.password
+    });
 
-  console.log({ data, error })
+    if (error) throw error;
+
+    const userId = data.user?.id;
+
+    if (!userId) throw new Error('Utente non creato correttamente.');
+
+    const { error: profileError } = await supabase
+      .from('profiles')
+      .insert([{ id: userId, username: credentials.value.username }]);
+
+    if (profileError) throw profileError;
+  } catch (err) {
+    console.error('Errore durante la registrazione:', err);
+  }
 }
 
 </script>
@@ -36,23 +53,19 @@ async function onSubmit() {
       </CardHeader>
       <CardContent>
         <div class="grid gap-4">
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 gap-4">
             <div class="grid gap-2">
-              <Label for="first-name">First name</Label>
-              <Input id="first-name" placeholder="Max" required />
-            </div>
-            <div class="grid gap-2">
-              <Label for="last-name">Last name</Label>
-              <Input id="last-name" placeholder="Robinson" required />
+              <Label for="username">Username</Label>
+              <Input id="username" placeholder="JBond" v-model="credentials.username" required />
             </div>
           </div>
           <div class="grid gap-2">
             <Label for="email">Email</Label>
-            <Input id="email" type="email" placeholder="m@example.com" required />
+            <Input id="email" type="email" placeholder="m@example.com" v-model="credentials.email" required />
           </div>
           <div class="grid gap-2">
             <Label for="password">Password</Label>
-            <Input id="password" type="password" />
+            <Input id="password" type="password" placeholder="N0t4S:mp1ePa55w0rd" v-model="credentials.password" required />
           </div>
           <Button type="submit" class="w-full">
             Create an account

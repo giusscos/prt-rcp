@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { Package2, Menu, Search } from 'lucide-vue-next'
 
-const isLoggedIn = false
+const supabase = useSupabaseClient()
+const { data: session } = await supabase.auth.getSession();
+
+const isLoggedIn = session?.session
 
 const links = [
   isLoggedIn ? {
@@ -20,6 +23,15 @@ const links = [
     title: "Go to Grocery List page"
   },
 ]
+
+async function onLogOut() {
+  try {
+    let { error } = await supabase.auth.signOut()
+    navigateTo('/')
+  } catch (err) {
+    console.log(err)
+  }
+}
 
 </script>
 
@@ -82,7 +94,7 @@ const links = [
         <DropdownMenuTrigger as-child>
           <Button variant="secondary" size="icon" class="rounded-full">
             <Avatar>
-              <AvatarImage src="https://avatars.githubusercontent.com/u/63466096?v=4" alt="@radix-vue" />
+              <AvatarImage src="" alt="@radix-vue" />
               <AvatarFallback>GC</AvatarFallback>
             </Avatar>
             <span class="sr-only">Toggle user menu</span>
@@ -94,21 +106,23 @@ const links = [
           <DropdownMenuItem>Settings</DropdownMenuItem>
           <DropdownMenuItem>Support</DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>Logout</DropdownMenuItem>
+          <DropdownMenuItem @click="onLogOut">Logout</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <Button variant="ghost">
-        <NuxtLink to="/login">
-          Sign In
-        </NuxtLink>
-      </Button>
+      <template v-if="!isLoggedIn">
+        <Button variant="ghost">
+          <NuxtLink to="/login">
+            Sign In
+          </NuxtLink>
+        </Button>
 
-      <Button as-child>
-        <NuxtLink to="/sign-up">
-          Sign Up
-        </NuxtLink>
-      </Button>
+        <Button as-child>
+          <NuxtLink to="/sign-up">
+            Sign Up
+          </NuxtLink>
+        </Button>
+      </template>
 
       <DarkModeToggle class="hidden md:block" />
     </div>
