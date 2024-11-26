@@ -49,7 +49,7 @@ import { Label } from '@/components/ui/label'
       </div>
       <div class="mt-4 text-center text-sm">
         Already have an account?
-        <NuxtLink to="/sign-in" class="underline">
+        <NuxtLink to="/login" class="underline">
           Sign in
         </NuxtLink>
       </div>

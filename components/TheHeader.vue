@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { Package2, Menu } from 'lucide-vue-next'
+import { Package2, Menu, Search } from 'lucide-vue-next'
 
 const isLoggedIn = false
 
 const links = [
-  isLoggedIn ?? {
+  isLoggedIn ? {
     label: "Dashboard",
-    href: "/",
+    href: "/dashboard",
     title: "Go to Dashboard page"
-  },
+  } : {},
   {
     label: "Recipes",
     href: "/recipes",
@@ -27,7 +27,7 @@ const links = [
   <header class="sticky top-0 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
     <!-- Desktop -->
     <nav
-      class="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">
+      class="hidden w-full flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">
       <NuxtLink to="/" class="flex items-center gap-2 text-lg font-semibold md:text-base">
         <Package2 class="h-6 w-6" />
         <h1 class="text-xl">SpinFood</h1>
@@ -36,8 +36,7 @@ const links = [
       <template v-for="link in links">
         <NuxtLink :to="link.href"
           class="inline-block flex-shrink-0 text-muted-foreground transition-colors hover:text-foreground"
-          active-class="!text-foreground"
-          :title="link.title">
+          active-class="!text-foreground" :title="link.title">
           {{ link.label }}
         </NuxtLink>
       </template>
@@ -53,14 +52,14 @@ const links = [
       </SheetTrigger>
       <SheetContent side="left">
         <nav class="grid gap-6 text-lg font-medium">
-          
+
           <NuxtLink to="/" class="flex items-center gap-2 text-lg font-semibold">
             <Package2 class="h-6 w-6" />
             <h1 class="text-xl">SpinFood</h1>
           </NuxtLink>
 
           <DarkModeToggle />
-          
+
           <template v-for="link in links">
             <NuxtLink :to="link.href" active-class="!text-foreground"
               class="text-muted-foreground hover:text-foreground" :title="link.title">
@@ -100,15 +99,15 @@ const links = [
       </DropdownMenu>
 
       <Button variant="ghost">
-        <NuxtLink to="/sign-in">
+        <NuxtLink to="/login">
           Sign In
         </NuxtLink>
       </Button>
-      
+
       <Button as-child>
-      <NuxtLink to="/sign-up">
-        Sign Up
-      </NuxtLink>
+        <NuxtLink to="/sign-up">
+          Sign Up
+        </NuxtLink>
       </Button>
 
       <DarkModeToggle class="hidden md:block" />
