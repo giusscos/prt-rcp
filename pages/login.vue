@@ -1,34 +1,22 @@
 <script setup lang="ts">
+import { Loader2 } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
-definePageMeta({
-    middleware: 'guest'
-})
+const { login } = useAuth()
 
-export interface Credentials {
-  username: string | null;
-  email: string;
-  password: string;
-}
+const isLoading = useIsLoading()
 
-const supabase = useSupabaseClient()
 const credentials = ref<Credentials>({
   email: "",
   password: ""
 })
 
 async function onSubmit() {
-  let { data, error } = await supabase.auth.signInWithPassword({
-    email: credentials.value.email,
-    password: credentials.value.password
-  })
-
-  console.log({ data, error })
+  login(credentials.value.email, credentials.value.password)
 }
-
 </script>
 
 <template>
@@ -55,14 +43,12 @@ async function onSubmit() {
                 Forgot your password?
               </NuxtLink>
             </div>
-            <Input id="password" type="password" v-model="credentials.password" required />
+            <Input id="password" type="password" v-model="credentials.password" placeholder="********" required />
           </div>
-          <Button type="submit" class="w-full">
+          <Button type="submit" :disabled="isLoading" class="w-full">
+            <Loader2 v-if="isLoading" class="w-4 h-4 mr-2 animate-spin" />
             Login
           </Button>
-          <!-- <Button variant="outline" class="w-full">
-          Login with Google
-        </Button> -->
         </div>
         <div class="mt-4 text-center text-sm">
           Don't have an account?

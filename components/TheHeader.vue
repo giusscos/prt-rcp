@@ -1,38 +1,13 @@
 <script setup lang="ts">
-import { Package2, Menu, Search } from 'lucide-vue-next'
+import { Loader2, Shell, Menu, Search } from 'lucide-vue-next'
 
-const supabase = useSupabaseClient()
-const { data: session } = await supabase.auth.getSession();
+const { logout } = useAuth()
 
-const isLoggedIn = session?.session
+const links = useNavBarLinks()
 
-const links = [
-  isLoggedIn ? {
-    label: "Dashboard",
-    href: "/dashboard",
-    title: "Go to Dashboard page"
-  } : {},
-  {
-    label: "Recipes",
-    href: "/recipes",
-    title: "Go to Recipes page"
-  },
-  {
-    label: "Grocery List",
-    href: "/grocery-list",
-    title: "Go to Grocery List page"
-  },
-]
+const isLoading = useIsLoading()
 
-async function onLogOut() {
-  try {
-    let { error } = await supabase.auth.signOut()
-    navigateTo('/')
-  } catch (err) {
-    console.log(err)
-  }
-}
-
+const isLoggedIn = useIsLoggedInUser()
 </script>
 
 <template>
@@ -41,7 +16,7 @@ async function onLogOut() {
     <nav
       class="hidden w-full flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">
       <NuxtLink to="/" class="flex items-center gap-2 text-lg font-semibold md:text-base">
-        <Package2 class="h-6 w-6" />
+        <Shell class="h-6 w-6" />
         <h1 class="text-xl">SpinFood</h1>
       </NuxtLink>
 
@@ -66,7 +41,7 @@ async function onLogOut() {
         <nav class="grid gap-6 text-lg font-medium">
 
           <NuxtLink to="/" class="flex items-center gap-2 text-lg font-semibold">
-            <Package2 class="h-6 w-6" />
+            <Shell class="h-6 w-6" />
             <h1 class="text-xl">SpinFood</h1>
           </NuxtLink>
 
@@ -106,13 +81,18 @@ async function onLogOut() {
           <DropdownMenuItem>Settings</DropdownMenuItem>
           <DropdownMenuItem>Support</DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem @click="onLogOut">Logout</DropdownMenuItem>
+          <!-- <DropdownMenuItem> -->
+            <Button @click="logout" variant="destructive" :disabled="isLoading" class="w-full">
+              <Loader2 v-if="isLoading" class="w-4 h-4 mr-2 animate-spin" />
+              Logout
+            </Button>
+          <!-- </DropdownMenuItem> -->
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <template v-if="!isLoggedIn">
+      <template v-else-if="!isLoggedIn">
         <Button variant="ghost">
-          <NuxtLink to="/login">
+          <NuxtLink class="w-full h-full" to="/login">
             Sign In
           </NuxtLink>
         </Button>

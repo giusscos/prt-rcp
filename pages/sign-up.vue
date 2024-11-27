@@ -1,14 +1,14 @@
 <script setup lang="ts">
+import { Loader2 } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
-definePageMeta({
-    middleware: 'guest'
-})
+const { signUp } = useAuth()
 
-const supabase = useSupabaseClient()
+const isLoading = useIsLoading()
+
 const credentials = ref<Credentials>({
   username: "",
   email: "",
@@ -16,28 +16,8 @@ const credentials = ref<Credentials>({
 })
 
 async function onSubmit() {
-  try {
-    const { data, error } = await supabase.auth.signUp({
-      email: credentials.value.email,
-      password: credentials.value.password
-    });
-
-    if (error) throw error;
-
-    const userId = data.user?.id;
-
-    if (!userId) throw new Error('Utente non creato correttamente.');
-
-    const { error: profileError } = await supabase
-      .from('profiles')
-      .insert([{ id: userId, username: credentials.value.username }]);
-
-    if (profileError) throw profileError;
-  } catch (err) {
-    console.error('Errore durante la registrazione:', err);
-  }
+  signUp(credentials.value.username, credentials.value.email, credentials.value.password) 
 }
-
 </script>
 
 <template>
@@ -67,12 +47,10 @@ async function onSubmit() {
             <Label for="password">Password</Label>
             <Input id="password" type="password" placeholder="N0t4S:mp1ePa55w0rd" v-model="credentials.password" required />
           </div>
-          <Button type="submit" class="w-full">
+          <Button type="submit" :disabled="isLoading" class="w-full">
+            <Loader2 v-if="isLoading" class="w-4 h-4 mr-2 animate-spin" />
             Create an account
           </Button>
-          <!-- <Button variant="outline" class="w-full">
-          Sign up with GitHub
-        </Button> -->
         </div>
         <div class="mt-4 text-center text-sm">
           Already have an account?
