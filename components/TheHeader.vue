@@ -1,4 +1,13 @@
 <script setup lang="ts">
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 import { Loader2, Shell, Menu, Search } from 'lucide-vue-next'
 
 const { logout } = useAuth()
@@ -45,8 +54,6 @@ const isLoggedIn = useIsLoggedInUser()
             <h1 class="text-xl">SpinFood</h1>
           </NuxtLink>
 
-          <DarkModeToggle />
-
           <template v-for="link in links">
             <NuxtLink :to="link.href" active-class="!text-foreground"
               class="text-muted-foreground hover:text-foreground" :title="link.title">
@@ -58,12 +65,23 @@ const isLoggedIn = useIsLoggedInUser()
     </Sheet>
 
     <div class="flex w-full items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
-      <form class="ml-auto flex-1 sm:flex-initial">
-        <div class="relative">
-          <Search class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input type="search" placeholder="Search recipes..." class="pl-8 sm:w-[300px] md:w-[200px] lg:w-[300px]" />
-        </div>
-      </form>
+      <Dialog>
+        <DialogTrigger class="ml-auto">
+          <Search class="p-0.5 text-muted-foreground" />
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Search</DialogTitle>
+            <DialogDescription>
+              Search ingredients and recipes
+            </DialogDescription>
+          </DialogHeader>
+
+          <form class="w-full">
+            <Input type="search" placeholder="Carbonara recipe" />
+          </form>
+        </DialogContent>
+      </Dialog>
 
       <DropdownMenu v-if="isLoggedIn">
         <DropdownMenuTrigger as-child>
@@ -81,12 +99,10 @@ const isLoggedIn = useIsLoggedInUser()
           <DropdownMenuItem>Settings</DropdownMenuItem>
           <DropdownMenuItem>Support</DropdownMenuItem>
           <DropdownMenuSeparator />
-          <!-- <DropdownMenuItem> -->
-            <Button @click="logout" variant="destructive" :disabled="isLoading" class="w-full">
-              <Loader2 v-if="isLoading" class="w-4 h-4 mr-2 animate-spin" />
-              Logout
-            </Button>
-          <!-- </DropdownMenuItem> -->
+          <Button @click="logout" variant="destructive" :disabled="isLoading" class="w-full">
+            <Loader2 v-if="isLoading" class="w-4 h-4 mr-2 animate-spin" />
+            Logout
+          </Button>
         </DropdownMenuContent>
       </DropdownMenu>
 
@@ -104,7 +120,7 @@ const isLoggedIn = useIsLoggedInUser()
         </Button>
       </template>
 
-      <DarkModeToggle class="hidden md:block" />
+      <DarkModeToggle />
     </div>
   </header>
 </template>

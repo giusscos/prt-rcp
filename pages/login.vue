@@ -10,6 +10,7 @@ const { login } = useAuth()
 const isLoading = useIsLoading()
 
 const credentials = ref<Credentials>({
+  username: "",
   email: "",
   password: ""
 })
