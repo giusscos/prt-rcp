@@ -8,7 +8,7 @@ export interface NavBarLink {
 }
 
 export interface Credentials {
-  username: string | null;
+  username: string;
   email: string;
   password: string;
 }

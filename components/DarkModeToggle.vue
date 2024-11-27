@@ -1,28 +1,23 @@
 <script setup lang="ts">
+import { Switch } from '@/components/ui/switch'
 import { Icon } from '@iconify/vue'
 
 const colorMode = useColorMode()
+
+const toggleTheme = () => {
+  colorMode.preference = colorMode.preference === 'dark' ? 'light' : 'dark'
+}
+
+const isDark = computed(() => colorMode.preference === 'dark')
 </script>
 
 <template>
-  <DropdownMenu>
-    <DropdownMenuTrigger as-child>
-      <Button variant="outline">
-        <Icon icon="line-md:sunny-filled-loop-to-moon-filled-loop-transition" class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:rotate-90 dark:scale-0" />
-        <Icon icon="line-md:moon-filled-alt-to-sunny-filled-loop-transition" class="absolute h-[1.2rem] w-[1.2rem] -rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-        <span class="sr-only">Toggle theme</span> 
-      </Button>
-    </DropdownMenuTrigger>
-    <DropdownMenuContent align="end">
-      <DropdownMenuItem @click="colorMode.preference = 'light'">
-        Light
-      </DropdownMenuItem>
-      <DropdownMenuItem @click="colorMode.preference = 'dark'">
-        Dark
-      </DropdownMenuItem>
-      <DropdownMenuItem @click="colorMode.preference = 'system'">
-        System
-      </DropdownMenuItem>
-    </DropdownMenuContent>
-  </DropdownMenu>
+  <ClientOnly>
+    <Switch :checked="isDark" @update:checked="toggleTheme">
+      <template #thumb>
+        <Icon v-if="isDark" icon="line-md:sunny-filled-loop-to-moon-filled-loop-transition" class="w-full h-full p-1" />
+        <Icon v-else icon="line-md:moon-filled-alt-to-sunny-filled-loop-transition" class="w-full h-full p-1" />
+      </template>
+    </Switch>
+  </ClientOnly>
 </template>
