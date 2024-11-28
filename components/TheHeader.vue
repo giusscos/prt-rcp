@@ -65,6 +65,7 @@ const isLoggedIn = useIsLoggedInUser()
     </Sheet>
 
     <div class="flex w-full items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
+
       <Dialog>
         <DialogTrigger class="ml-auto">
           <Search class="p-0.5 text-muted-foreground" />
