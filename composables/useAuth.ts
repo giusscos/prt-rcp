@@ -1,23 +1,6 @@
 import { ref } from 'vue'
 import type { User } from '@supabase/supabase-js'
 
-export interface NavBarLink {
-  label: string;
-  href: string;
-  title: string;
-}
-
-export interface Credentials {
-  username: string;
-  email: string;
-  password: string;
-}
-
-export interface Profile {
-  id: string;
-  username: string;
-}
-
 export const defaultNavLink = [
   {
       label: "Recipes",
