@@ -11,9 +11,7 @@ import {
 } from '@/components/ui/tabs'
 import {
   File,
-  ListFilter,
-  MoreHorizontal,
-  PlusCircle
+  ListFilter
 } from 'lucide-vue-next'
 
 const supabase = useSupabaseClient()
@@ -40,7 +38,15 @@ supabase.channel('custom-all-channel')
     { event: '*', schema: 'public', table: 'ingredients' },
     (payload) => {
       const { new: newProduct } = payload;
-      products.value.push(newProduct as Ingredient)
+      const newProd = newProduct as Ingredient
+
+      const indexProd = products.value.findIndex((el) => el.id == newProd.id)
+
+      if (indexProd != -1) {
+        products.value[indexProd] = newProd
+      } else if (indexProd == -1) {
+        products.value.push(newProd)
+      }
     }
   )
   .subscribe()
@@ -61,8 +67,7 @@ onMounted(() => {
             <TabsTrigger value="all">
               All
             </TabsTrigger>
-            <TabsTrigger v-for="status in productStatus" :key="status" :value="status"
-              class="capitalize">
+            <TabsTrigger v-for="status in productStatus" :key="status" :value="status" class="capitalize">
               {{ status }}
             </TabsTrigger>
           </TabsList>
@@ -114,11 +119,13 @@ onMounted(() => {
                 </CardDescription>
               </CardHeader>
 
-              <CardContent>
-                <Card class="p-6 flex flex-col sm:flex-row gap-4 items-center w-full" v-for="product in products">
+              <CardContent class="grid grid-cols-2 gap-4">
+                <div
+                  class="p-4 flex flex-col sm:flex-row gap-6 border border-neutral-700 rounded-xl items-center w-full"
+                  v-for="product in products">
 
                   <div
-                    class="aspect-square w-48 h-48 bg-neutral-900 text-background dark:text-foreground rounded-3xl  border border-neutral-500 flex justify-center items-center">
+                    class="aspect-square w-32 h-32 bg-neutral-900 text-background dark:text-foreground rounded-xl border border-neutral-600 flex justify-center items-center">
                     <span class="font-semibold">
                       Photo
                     </span>
@@ -134,12 +141,13 @@ onMounted(() => {
                     <p>
                       {{ product.description }}
                     </p>
-                    <span>
+                    <span class="text-xs">
                       Created on {{ $dayjs(product.created_at).format('MMMM DD, YYYY') }}
                     </span>
                   </div>
 
-                  <DropdownMenu>
+                  <EditProduct :product-id="product.id" />
+                  <!-- <DropdownMenu>
                     <DropdownMenuTrigger as-child>
                       <Button aria-haspopup="true" size="icon" variant="ghost" class="ml-auto self-start">
                         <MoreHorizontal class="h-4 w-4" />
@@ -151,8 +159,8 @@ onMounted(() => {
                       <DropdownMenuItem>Edit</DropdownMenuItem>
                       <DropdownMenuItem>Delete</DropdownMenuItem>
                     </DropdownMenuContent>
-                  </DropdownMenu>
-                </Card>
+                  </DropdownMenu> -->
+                </div>
               </CardContent>
             </template>
             <template v-else>
@@ -163,14 +171,14 @@ onMounted(() => {
                 </CardDescription>
               </CardHeader>
             </template>
-            <CardFooter>
+            <!-- <CardFooter>
               <template v-if="products.length > 0">
                 <div class="text-xs text-muted-foreground">
                   Showing <strong>1-10</strong> of <strong>32</strong>
                   products
                 </div>
               </template>
-            </CardFooter>
+            </CardFooter> -->
           </Card>
         </TabsContent>
       </Tabs>
