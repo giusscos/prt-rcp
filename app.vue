@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Toaster } from '@/components/ui/sonner'
 const { checkAuth } = useAuth()
 
 onMounted(() => {
@@ -9,6 +10,7 @@ onMounted(() => {
 <template>
   <NuxtLayout>
     <NuxtPage />
+    <Toaster />
   </NuxtLayout>
 </template>
 

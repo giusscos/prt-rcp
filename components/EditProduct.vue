@@ -15,6 +15,7 @@ import {
 } from 'lucide-vue-next'
 
 import { Input } from '@/components/ui/input'
+import { toast } from 'vue-sonner'
 
 const props = defineProps(["productId"])
 
@@ -51,6 +52,35 @@ async function onSubmit() {
         if (error) throw error
 
         if (data) console.log({ data })
+        isLoading.value = false
+    } catch (err) {
+        isLoading.value = false
+        console.log(err)
+    }
+}
+
+function confirmDelete() {
+    toast.warning('Are your sure?', {
+        description: 'This product will be deleted definitly',
+        action: {
+            label: 'Confirm',
+            onClick: () => onDelete(),
+        },
+    })
+}
+
+async function onDelete() {
+    try {
+        isLoading.value = true
+
+        const { error } = await supabase
+            .from('ingredients')
+            .delete()
+            .eq('id', props['productId'])
+
+        isLoading.value = false
+
+        if (error) throw error
         isLoading.value = false
     } catch (err) {
         isLoading.value = false
@@ -112,14 +142,18 @@ onMounted(() => {
                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
                 <DropdownMenuItem>
                     <DialogTrigger as-child>
-                        <Button variant="ghost">
-                            <span class="whitespace-nowrap">
-                                Edit
-                            </span>
-                        </Button>
+                        <button type="button" class="block w-full text-left whitespace-nowrap">
+                            Edit
+                        </button>
                     </DialogTrigger>
                 </DropdownMenuItem>
-                <DropdownMenuItem>Delete</DropdownMenuItem>
+
+                <DropdownMenuItem>
+                    <button type="button" class="block w-full text-left text-destructive whitespace-nowrap"
+                        @click="confirmDelete">
+                        Delete
+                    </button>
+                </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
 

@@ -37,7 +37,18 @@ supabase.channel('custom-all-channel')
   .on('postgres_changes',
     { event: '*', schema: 'public', table: 'ingredients' },
     (payload) => {
-      const { new: newProduct } = payload;
+      const { new: newProduct, eventType, old } = payload;
+
+      if (eventType === "DELETE") {
+        const oldProd = old as Ingredient
+
+        const indexProd = products.value.findIndex((el) => el.id == oldProd.id)
+
+        products.value.splice(indexProd, 1)
+        
+        return
+      }
+
       const newProd = newProduct as Ingredient
 
       const indexProd = products.value.findIndex((el) => el.id == newProd.id)
