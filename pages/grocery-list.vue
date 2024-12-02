@@ -45,7 +45,7 @@ supabase.channel('custom-all-channel')
         const indexProd = products.value.findIndex((el) => el.id == oldProd.id)
 
         products.value.splice(indexProd, 1)
-        
+
         return
       }
 
@@ -130,9 +130,9 @@ onMounted(() => {
                 </CardDescription>
               </CardHeader>
 
-              <CardContent class="grid grid-cols-2 gap-4">
+              <CardContent class="grid lg:grid-cols-2 gap-4">
                 <div
-                  class="p-4 flex flex-col sm:flex-row gap-6 border border-neutral-700 rounded-xl items-center w-full"
+                  class="p-4 flex flex-col sm:flex-row items-start gap-6 border border-neutral-700 rounded-xl w-full"
                   v-for="product in products">
 
                   <div

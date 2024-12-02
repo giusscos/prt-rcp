@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { Toaster } from '@/components/ui/sonner'
+
+const colorMode = useColorMode()
+
 const { checkAuth } = useAuth()
 
 onMounted(() => {
@@ -10,7 +13,7 @@ onMounted(() => {
 <template>
   <NuxtLayout>
     <NuxtPage />
-    <Toaster />
+    <Toaster richColors position="top-center" :theme="colorMode.preference == 'dark' ? 'dark' : 'light'" />
   </NuxtLayout>
 </template>
 
