@@ -17,11 +17,21 @@ export interface Profile {
 
 export const productStatus = ["active", "draft", "archive"]
 
-export interface Ingredients {
+export type Status = "Active" | "Draft" | "Archive"
+
+export interface NutritionalValue {
+  kcal: number;
+  carboidrates: number;
+  sugar: number;
+  proteins: number;
+  fats: number;
+  fibers: number;
+}
+export interface Ingredient {
   id: string;
   name: string;
   user_id: number;
-  nutritional_value: string;
+  nutritional_value: NutritionalValue;
   created_at: string;
   description: string;
   status: string;
@@ -31,7 +41,7 @@ export interface Ingredients {
   unit_id: number;
 }
 
-export interface InsertIngredients {
+export interface InsertIngredient {
   name: string;
   // nutritional_value: string;
   description: string;

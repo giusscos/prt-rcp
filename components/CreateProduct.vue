@@ -18,7 +18,7 @@ const isLoading = useIsLoading()
 
 const units = ref<Units[]>([])
 
-const product = ref<InsertIngredients>({
+const product = ref<InsertIngredient>({
   name: "",
   description: "",
   status: "",

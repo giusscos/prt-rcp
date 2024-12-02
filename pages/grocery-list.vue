@@ -16,30 +16,6 @@ import {
   PlusCircle
 } from 'lucide-vue-next'
 
-export type Status = "Active" | "Draft" | "Archive"
-
-export interface NutritionalValue {
-  kcal: number;
-  carboidrates: number;
-  sugar: number;
-  proteins: number;
-  fats: number;
-  fibers: number;
-}
-
-export interface Ingredient {
-  id: string;
-  user_id: string;
-  name: string;
-  nutritional_values: NutritionalValue;
-  description: string;
-  status: Status;
-  quantity: number;
-  unit: string;
-  image_url: string;
-  created_at: string;
-}
-
 const supabase = useSupabaseClient()
 
 const products = ref<Ingredient[]>([])
@@ -59,21 +35,12 @@ async function getIngredients() {
   }
 }
 
-const channel = supabase.channel('custom-all-channel')
+supabase.channel('custom-all-channel')
   .on('postgres_changes',
     { event: '*', schema: 'public', table: 'ingredients' },
     (payload) => {
-      console.log('Change received!', payload)
       const { new: newProduct } = payload;
-      products.value = products.value.map(product => {
-        if (product.id == newProduct.id) {
-          return {
-            ...product,
-            ...newProduct
-          }
-        }
-        return product
-      })
+      products.value.push(newProduct as Ingredient)
     }
   )
   .subscribe()
@@ -90,18 +57,13 @@ onMounted(() => {
       <Tabs default-value="all">
         <div class="flex items-center">
 
-          <TabsList>
+          <TabsList class="hidden sm:flex">
             <TabsTrigger value="all">
               All
             </TabsTrigger>
-            <TabsTrigger value="active">
-              Active
-            </TabsTrigger>
-            <TabsTrigger value="draft">
-              Draft
-            </TabsTrigger>
-            <TabsTrigger value="archived" class="hidden sm:flex">
-              Archived
+            <TabsTrigger v-for="status in productStatus" :key="status" :value="status"
+              class="capitalize">
+              {{ status }}
             </TabsTrigger>
           </TabsList>
 
@@ -109,7 +71,7 @@ onMounted(() => {
             <template v-if="products.length > 0">
               <DropdownMenu>
                 <DropdownMenuTrigger as-child>
-                  <Button variant="outline" size="sm" class="h-7 gap-1">
+                  <Button variant="outline" size="sm" class="h-7 gap-1 sm:hidden">
                     <ListFilter class="h-3.5 w-3.5" />
                     <span class="sr-only sm:not-sr-only sm:whitespace-nowrap">
                       Filter
@@ -141,32 +103,45 @@ onMounted(() => {
 
           </div>
         </div>
+
         <TabsContent value="all">
           <Card>
-
             <template v-if="products.length > 0">
               <CardHeader>
-                <CardTitle>Products</CardTitle>
+                <CardTitle>All Products</CardTitle>
                 <CardDescription>
                   Manage your products and view their sales performance.
                 </CardDescription>
               </CardHeader>
 
               <CardContent>
-                <div class="flex flex-nowrap gap-4" v-for="product in products">
+                <Card class="p-6 flex flex-col sm:flex-row gap-4 items-center w-full" v-for="product in products">
+
                   <div
-                    class="aspect-square w-24 h-24 bg-neutral-900 text-background dark:text-foreground rounded-full border border-neutral-500 flex justify-center items-center">
-                    <span class="font-semibold"> Photo</span>
+                    class="aspect-square w-48 h-48 bg-neutral-900 text-background dark:text-foreground rounded-3xl  border border-neutral-500 flex justify-center items-center">
+                    <span class="font-semibold">
+                      Photo
+                    </span>
                   </div>
+
                   <div class="flex flex-col gap-4">
-                    <h3>{{ product.name }}</h3>
-                    <Badge>{{ product.status }}</Badge>
-                    <p>{{ product.description }}</p>
-                    <span>{{ product.created_at }}</span>
+                    <h3 class="text-2xl">
+                      {{ product.name }}
+                    </h3>
+                    <Badge class="w-fit">
+                      {{ product.status }}
+                    </Badge>
+                    <p>
+                      {{ product.description }}
+                    </p>
+                    <span>
+                      Created on {{ $dayjs(product.created_at).format('MMMM DD, YYYY') }}
+                    </span>
                   </div>
+
                   <DropdownMenu>
                     <DropdownMenuTrigger as-child>
-                      <Button aria-haspopup="true" size="icon" variant="ghost">
+                      <Button aria-haspopup="true" size="icon" variant="ghost" class="ml-auto self-start">
                         <MoreHorizontal class="h-4 w-4" />
                         <span class="sr-only">Toggle menu</span>
                       </Button>
@@ -177,7 +152,7 @@ onMounted(() => {
                       <DropdownMenuItem>Delete</DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
-                </div>
+                </Card>
               </CardContent>
             </template>
             <template v-else>

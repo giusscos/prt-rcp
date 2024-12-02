@@ -12,7 +12,8 @@ export default defineNuxtConfig({
     '@nuxtjs/tailwindcss',
     'shadcn-nuxt',
     '@nuxtjs/color-mode',
-    '@nuxtjs/supabase'
+    '@nuxtjs/supabase',
+    'dayjs-nuxt'
   ],
   colorMode: {
     classSuffix: ''
