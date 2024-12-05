@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
@@ -13,6 +12,7 @@ import {
   File,
   ListFilter
 } from 'lucide-vue-next'
+import { PlusCircle } from 'lucide-vue-next'
 
 const supabase = useSupabaseClient()
 
@@ -22,7 +22,7 @@ async function getIngredients() {
   try {
     const { data: ingredients, error } = await supabase
       .from('ingredients')
-      .select('*')
+      .select('*, units(id, name, abbreviation)')
       .range(0, 9)
 
     if (error) throw error
@@ -115,8 +115,14 @@ onMounted(() => {
               </Button>
             </template>
 
-            <CreateProduct />
-
+            <NuxtLink to="/grocery-list/create" >
+              <Button size="sm" class="h-7 gap-1">
+                <PlusCircle class="h-3.5 w-3.5" />
+                <span class="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                  Add Product
+                </span>
+              </Button>
+            </NuxtLink>
           </div>
         </div>
 
@@ -131,50 +137,7 @@ onMounted(() => {
               </CardHeader>
 
               <CardContent class="grid lg:grid-cols-2 gap-4">
-                <div class="p-4 border border-neutral-700 rounded-xl w-full flex flex-col gap-2"
-                  v-for="product in products">
-                  <div>
-                    <span class="text-[0.65rem]  text-muted-foreground">
-                      Created on {{ $dayjs(product.created_at).format('MMMM DD, YYYY') }}
-                    </span>
-
-                    <h3 class="text-3xl font-semibold line-clamp-1">
-                      {{ product.name }}
-                    </h3>
-                  </div>
-
-                  <div class="flex gap-4">
-                    <div
-                      class="aspect-square w-32 h-32 bg-neutral-900 text-background dark:text-foreground rounded-xl border border-neutral-600 flex justify-center items-center">
-                      <span class="font-semibold">
-                        Photo
-                      </span>
-                    </div>
-
-                    <div class="flex flex-col h-full gap-4">
-                      <p class="line-clamp-3">
-                        {{ product.description }}
-                      </p>
-                      <Badge class="w-fit mt-auto">
-                        {{ product.status }}
-                      </Badge>
-                    </div>
-                    <EditProduct :product-id="product.id" />
-                  </div>
-                  <!-- <DropdownMenu>
-                    <DropdownMenuTrigger as-child>
-                      <Button aria-haspopup="true" size="icon" variant="ghost" class="ml-auto self-start">
-                        <MoreHorizontal class="h-4 w-4" />
-                        <span class="sr-only">Toggle menu</span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuItem>Edit</DropdownMenuItem>
-                      <DropdownMenuItem>Delete</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu> -->
-                </div>
+                <CardProduct v-for="(product, index) in products" :product="product" :key="'product-' + index" />
               </CardContent>
             </template>
             <template v-else>

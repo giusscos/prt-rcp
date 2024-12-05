@@ -10,14 +10,13 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog'
-import {
-    MoreHorizontal,
-} from 'lucide-vue-next'
+
 
 import { Input } from '@/components/ui/input'
-import { toast } from 'vue-sonner'
 
 const props = defineProps(["productId"])
+
+const selectedFile = ref<File | null>(null)
 
 const isLoading = useIsLoading()
 
@@ -25,6 +24,8 @@ const units = ref<Units[]>([])
 
 const product = ref<InsertIngredient>({
     name: "",
+    slug: "",
+    image_url: "",
     description: "",
     status: "",
     quantity: 100,
@@ -39,6 +40,19 @@ async function onSubmit() {
     try {
         isLoading.value = true
 
+        product.value.slug = createSlug(product.value.name);
+
+        if (selectedFile.value) {
+            const { error: storageError } = await supabase
+                .storage
+                .from('ingredients')
+                .upload(product.value.slug, selectedFile.value);
+
+            if (storageError) throw storageError;
+
+            product.value.image_url = 'ingredients/' + product.value.slug;
+        }
+
         product.value.unit_id = Number(unitString.value)
 
         const { data, error } = await supabase
@@ -51,7 +65,6 @@ async function onSubmit() {
 
         if (error) throw error
 
-        if (data) console.log({ data })
         isLoading.value = false
     } catch (err) {
         isLoading.value = false
@@ -59,34 +72,7 @@ async function onSubmit() {
     }
 }
 
-function confirmDelete() {
-    toast.warning('Are your sure?', {
-        description: 'This product will be deleted definitly',
-        action: {
-            label: 'Confirm',
-            onClick: () => onDelete(),
-        },
-    })
-}
 
-async function onDelete() {
-    try {
-        isLoading.value = true
-
-        const { error } = await supabase
-            .from('ingredients')
-            .delete()
-            .eq('id', props['productId'])
-
-        isLoading.value = false
-
-        if (error) throw error
-        isLoading.value = false
-    } catch (err) {
-        isLoading.value = false
-        console.log(err)
-    }
-}
 
 async function getProduct() {
     try {
@@ -104,6 +90,13 @@ async function getProduct() {
         unitString.value = product.value.unit_id.toString()
     } catch (err) {
         console.log(err)
+    }
+}
+
+function handleFileChange(event: Event) {
+    const target = event.target as HTMLInputElement;
+    if (target.files && target.files[0]) {
+        selectedFile.value = target.files[0];
     }
 }
 
@@ -131,31 +124,7 @@ onMounted(() => {
 
 <template>
     <Dialog>
-        <DropdownMenu>
-            <DropdownMenuTrigger as-child>
-                <Button aria-haspopup="true" size="icon" variant="ghost" class="ml-auto self-start">
-                    <MoreHorizontal class="h-4 w-4" />
-                    <span class="sr-only">Toggle menu</span>
-                </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                <DropdownMenuItem>
-                    <DialogTrigger as-child>
-                        <button type="button" class="block w-full text-left whitespace-nowrap">
-                            Edit
-                        </button>
-                    </DialogTrigger>
-                </DropdownMenuItem>
-
-                <DropdownMenuItem>
-                    <button type="button" class="block w-full text-left text-destructive whitespace-nowrap"
-                        @click="confirmDelete">
-                        Delete
-                    </button>
-                </DropdownMenuItem>
-            </DropdownMenuContent>
-        </DropdownMenu>
+        
 
         <DialogContent class="sm:max-w-[425px]">
             <DialogHeader>
@@ -166,6 +135,11 @@ onMounted(() => {
             </DialogHeader>
 
             <form @submit.prevent="onSubmit" class="flex flex-col gap-4">
+                <div class="grid gap-1.5">
+                    <Label for="picture">Picture</Label>
+                    <Input id="picture" type="file" @change="handleFileChange" />
+                </div>
+
                 <div class="grid gap-2">
                     <Label for="name">
                         Name

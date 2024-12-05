@@ -30,6 +30,7 @@ export interface NutritionalValue {
 export interface Ingredient {
   id: string;
   name: string;
+  slug: string;
   user_id: number;
   nutritional_value: NutritionalValue;
   created_at: string;
@@ -39,14 +40,16 @@ export interface Ingredient {
   quantity: number;
   rating: number;
   unit_id: number;
+  units: Units;
 }
 
 export interface InsertIngredient {
   name: string;
+  slug: string;
   // nutritional_value: string;
   description: string;
   status: string;
-  // image_url: string;
+  image_url: string;
   quantity: number;
   unit_id: number;
 }

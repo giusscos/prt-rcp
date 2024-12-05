@@ -11,19 +11,24 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 
+import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { PlusCircle } from 'lucide-vue-next'
 
 const isLoading = useIsLoading()
 
+const selectedFile = ref<File | null>(null)
+
 const units = ref<Units[]>([])
 
 const product = ref<InsertIngredient>({
   name: "",
+  slug: "",
+  image_url: "",
   description: "",
   status: "",
   quantity: 100,
-  unit_id: 0
+  unit_id: 0,
 })
 
 const unitString = ref<string>("")
@@ -33,6 +38,21 @@ const supabase = useSupabaseClient()
 async function onSubmit() {
   try {
     isLoading.value = true
+
+    product.value.slug = createSlug(product.value.name);
+
+    if (!selectedFile.value) {
+      throw new Error("Please upload an image");
+    }
+
+    const { error: storageError } = await supabase
+      .storage
+      .from('ingredients')
+      .upload(product.value.slug, selectedFile.value);
+
+    if (storageError) throw storageError;
+
+    product.value.image_url = 'ingredients/' + product.value.slug;
 
     product.value.unit_id = Number(unitString.value)
 
@@ -45,11 +65,17 @@ async function onSubmit() {
 
     if (error) throw error
 
-    if (data) console.log({ data })
     isLoading.value = false
   } catch (err) {
     isLoading.value = false
     console.log(err)
+  }
+}
+
+function handleFileChange(event: Event) {
+  const target = event.target as HTMLInputElement;
+  if (target.files && target.files[0]) {
+    selectedFile.value = target.files[0];
   }
 }
 
@@ -94,6 +120,11 @@ onMounted(() => {
       </DialogHeader>
 
       <form @submit.prevent="onSubmit" class="flex flex-col gap-4">
+        <div class="grid gap-1.5">
+          <Label for="picture">Picture</Label>
+          <Input id="picture" type="file" @change="handleFileChange" />
+        </div>
+
         <div class="grid gap-2">
           <Label for="name">
             Name

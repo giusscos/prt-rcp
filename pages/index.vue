@@ -15,7 +15,7 @@ const isLoggedIn = useIsLoggedInUser()
           <h2 class="text-4xl lg:text-6xl font-serif font-bold">
             Showcase your recipes and expand your audience 🌍
           </h2>
-          <p class="text-xl lg:text-2xl font-semibold py-4">
+          <p class="text-xl lg:text-2xl text-muted-foreground font-semibold py-4">
             Showcase your unique recipes and connect with a broader audience, inspire others, and turn wasted food
             into culinary masterpieces.
           </p>
