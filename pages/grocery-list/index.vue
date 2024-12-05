@@ -16,18 +16,38 @@ import { PlusCircle } from 'lucide-vue-next'
 
 const supabase = useSupabaseClient()
 
+const isPageLoading = useIsPageLoading()
+
+const page = ref(0);
+
+const pageSize = ref(9);
+
+const totalProducts = ref(0);
+
 const products = ref<Ingredient[]>([])
 
-async function getIngredients() {
+async function getIngredients(currentPage = 1) {
   try {
-    const { data: ingredients, error } = await supabase
+    isPageLoading.value = true
+
+    const from = (currentPage - 1) * pageSize.value;
+
+    const to = from + pageSize.value - 1;
+
+    const { data: ingredients, error, count } = await supabase
       .from('ingredients')
-      .select('*, units(id, name, abbreviation)')
-      .range(0, 9)
+      .select('*, units(id, name, abbreviation)', { count: 'exact' })
+      .range(from, to)
 
     if (error) throw error
 
-    products.value = ingredients
+    products.value = ingredients ?? []
+
+    totalProducts.value = count || 0;
+
+    page.value = currentPage;
+
+    isPageLoading.value = false
   } catch (err) {
     console.log(err)
   }
@@ -70,7 +90,6 @@ onMounted(() => {
 <template>
   <div class="flex min-h-screen w-full flex-col bg-muted/40 py-4">
     <div class="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
-
       <Tabs default-value="all">
         <div class="flex items-center">
 
@@ -115,7 +134,7 @@ onMounted(() => {
               </Button>
             </template>
 
-            <NuxtLink to="/grocery-list/create" >
+            <NuxtLink to="/grocery-list/create">
               <Button size="sm" class="h-7 gap-1">
                 <PlusCircle class="h-3.5 w-3.5" />
                 <span class="sr-only sm:not-sr-only sm:whitespace-nowrap">
@@ -148,14 +167,27 @@ onMounted(() => {
                 </CardDescription>
               </CardHeader>
             </template>
-            <!-- <CardFooter>
+
+            <CardFooter>
               <template v-if="products.length > 0">
-                <div class="text-xs text-muted-foreground">
-                  Showing <strong>1-10</strong> of <strong>32</strong>
-                  products
+                <div class="flex items-center justify-between w-full">
+                  <div class="text-xs text-muted-foreground">
+                    Showing <strong>{{ (page - 1) * pageSize + 1 }}</strong> to
+                    <strong>{{ Math.min(page * pageSize, totalProducts) }}</strong> of
+                    <strong>{{ totalProducts }}</strong> products
+                  </div>
+                  <div class="flex gap-2">
+                    <Button size="sm" variant="outline" :disabled="page === 1" @click="getIngredients(page - 1)">
+                      Previous
+                    </Button>
+                    <Button size="sm" variant="outline" :disabled="page * pageSize >= totalProducts"
+                      @click="getIngredients(page + 1)">
+                      Next
+                    </Button>
+                  </div>
                 </div>
               </template>
-            </CardFooter> -->
+            </CardFooter>
           </Card>
         </TabsContent>
       </Tabs>

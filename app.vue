@@ -12,6 +12,7 @@ onMounted(() => {
 
 <template>
   <NuxtLayout>
+    <NuxtLoadingIndicator color="text-foreground" />
     <NuxtPage />
     <Toaster richColors position="top-center" :theme="colorMode.preference == 'dark' ? 'dark' : 'light'" />
   </NuxtLayout>

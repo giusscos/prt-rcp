@@ -137,7 +137,7 @@ onMounted(() => {
                 <Textarea id="description" placeholder="Very simple homemade pasta..." v-model="product.description" />
             </div>
 
-            <div class="flex items-end flex-wrap gap-4">
+            <div class="flex items-center flex-wrap gap-4">
                 <div class="grid gap-1.5">
                     <Label for="picture">Picture</Label>
                     <input id="picture" type="file" @change="handleFileChange" />
