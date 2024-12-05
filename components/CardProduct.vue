@@ -58,7 +58,7 @@ async function onDelete() {
                 </h3>
             </div>
 
-            <Badge class="w-fit ml-auto mb-auto">
+            <Badge class="w-fit ml-auto mb-auto capitalize">
                 {{ props.product.status }}
             </Badge>
         </div>
@@ -76,14 +76,14 @@ async function onDelete() {
 
             <DropdownMenu>
                 <DropdownMenuTrigger as-child>
-                    <Button aria-haspopup="true" size="icon" variant="ghost" class="ml-auto self-start">
+                    <Button aria-haspopup="true" size="icon" variant="ghost" class="ml-auto self-start rounded-full aspect-square">
                         <MoreHorizontal class="h-4 w-4" />
                         <span class="sr-only">Toggle menu</span>
                     </Button>
                 </DropdownMenuTrigger>
 
                 <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                    <!-- <DropdownMenuLabel>Actions</DropdownMenuLabel> -->
                     <DropdownMenuItem>
                         <NuxtLink :to="'/grocery-list/update/' + props.product.slug"
                             class="block w-full text-left whitespace-nowrap">

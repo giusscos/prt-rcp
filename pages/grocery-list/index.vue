@@ -18,6 +18,8 @@ const supabase = useSupabaseClient()
 
 const isPageLoading = useIsPageLoading()
 
+const selectedStatus = ref("all");
+
 const page = ref(0);
 
 const pageSize = ref(9);
@@ -37,6 +39,7 @@ async function getIngredients(currentPage = 1) {
     const { data: ingredients, error, count } = await supabase
       .from('ingredients')
       .select('*, units(id, name, abbreviation)', { count: 'exact' })
+      .like('status', selectedStatus.value != 'all' ? "%" + selectedStatus.value + "%" : '%%')
       .range(from, to)
 
     if (error) throw error
@@ -85,6 +88,10 @@ supabase.channel('custom-all-channel')
 onMounted(() => {
   getIngredients()
 })
+
+watch(selectedStatus, () => {
+  getIngredients()
+})
 </script>
 
 <template>
@@ -94,11 +101,13 @@ onMounted(() => {
         <div class="flex items-center">
 
           <TabsList class="hidden sm:flex">
-            <TabsTrigger value="all">
+            <TabsTrigger value="all" @click="selectedStatus = 'all'">
               All
             </TabsTrigger>
             <TabsTrigger v-for="status in productStatus" :key="status" :value="status" class="capitalize">
-              {{ status }}
+              <span @click="selectedStatus = status">
+                {{ status }}
+              </span>
             </TabsTrigger>
           </TabsList>
 
@@ -145,7 +154,7 @@ onMounted(() => {
           </div>
         </div>
 
-        <TabsContent value="all">
+        <TabsContent :value="selectedStatus">
           <Card>
             <template v-if="products.length > 0">
               <CardHeader>
