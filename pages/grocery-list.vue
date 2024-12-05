@@ -131,33 +131,36 @@ onMounted(() => {
               </CardHeader>
 
               <CardContent class="grid lg:grid-cols-2 gap-4">
-                <div
-                  class="p-4 flex flex-col sm:flex-row items-start gap-6 border border-neutral-700 rounded-xl w-full"
+                <div class="p-4 border border-neutral-700 rounded-xl w-full flex flex-col gap-2"
                   v-for="product in products">
-
-                  <div
-                    class="aspect-square w-32 h-32 bg-neutral-900 text-background dark:text-foreground rounded-xl border border-neutral-600 flex justify-center items-center">
-                    <span class="font-semibold">
-                      Photo
-                    </span>
-                  </div>
-
-                  <div class="flex flex-col gap-4">
-                    <h3 class="text-2xl">
-                      {{ product.name }}
-                    </h3>
-                    <Badge class="w-fit">
-                      {{ product.status }}
-                    </Badge>
-                    <p>
-                      {{ product.description }}
-                    </p>
-                    <span class="text-xs">
+                  <div>
+                    <span class="text-[0.65rem]  text-muted-foreground">
                       Created on {{ $dayjs(product.created_at).format('MMMM DD, YYYY') }}
                     </span>
+
+                    <h3 class="text-3xl font-semibold line-clamp-1">
+                      {{ product.name }}
+                    </h3>
                   </div>
 
-                  <EditProduct :product-id="product.id" />
+                  <div class="flex gap-4">
+                    <div
+                      class="aspect-square w-32 h-32 bg-neutral-900 text-background dark:text-foreground rounded-xl border border-neutral-600 flex justify-center items-center">
+                      <span class="font-semibold">
+                        Photo
+                      </span>
+                    </div>
+
+                    <div class="flex flex-col h-full gap-4">
+                      <p class="line-clamp-3">
+                        {{ product.description }}
+                      </p>
+                      <Badge class="w-fit mt-auto">
+                        {{ product.status }}
+                      </Badge>
+                    </div>
+                    <EditProduct :product-id="product.id" />
+                  </div>
                   <!-- <DropdownMenu>
                     <DropdownMenuTrigger as-child>
                       <Button aria-haspopup="true" size="icon" variant="ghost" class="ml-auto self-start">
