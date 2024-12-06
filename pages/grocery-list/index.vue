@@ -9,7 +9,6 @@ import {
   TabsTrigger,
 } from '@/components/ui/tabs'
 import {
-  File,
   ListFilter
 } from 'lucide-vue-next'
 import { PlusCircle } from 'lucide-vue-next'
@@ -104,7 +103,8 @@ watch(selectedStatus, () => {
             <TabsTrigger value="all" @click="selectedStatus = 'all'">
               All
             </TabsTrigger>
-            <TabsTrigger v-for="status in productStatus" :key="status" :value="status" class="capitalize">
+            <TabsTrigger v-for="(status, index) in productStatus" :key="'desktop-filter-' + index" :value="status"
+              class="capitalize">
               <span @click="selectedStatus = status">
                 {{ status }}
               </span>
@@ -125,22 +125,26 @@ watch(selectedStatus, () => {
                 <DropdownMenuContent align="end">
                   <DropdownMenuLabel>Filter by</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem checked>
-                    Active
+                  <DropdownMenuItem :checked="selectedStatus = 'all'">
+                    <span @click="selectedStatus = 'all'" class="capitalize cursor-pointer" type="button" variant="ghost">
+                      All
+                    </span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem>Draft</DropdownMenuItem>
-                  <DropdownMenuItem>
-                    Archived
+                  <DropdownMenuItem v-for="(status, index) in productStatus" :key="'mobile-filter-' + index"
+                    :checked="status == selectedStatus">
+                    <span @click="selectedStatus = status" class="capitalize cursor-pointer" type="button" variant="ghost">
+                      {{ status }}
+                    </span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              <Button size="sm" variant="outline" class="h-7 gap-1">
+              <!-- <Button size="sm" variant="outline" class="h-7 gap-1">
                 <File class="h-3.5 w-3.5" />
                 <span class="sr-only sm:not-sr-only sm:whitespace-nowrap">
                   Export
                 </span>
-              </Button>
+              </Button> -->
             </template>
 
             <NuxtLink to="/grocery-list/create">
@@ -158,21 +162,25 @@ watch(selectedStatus, () => {
           <Card>
             <template v-if="products.length > 0">
               <CardHeader>
-                <CardTitle>All Products</CardTitle>
+                <CardTitle>
+                  <span class="capitalize">{{ selectedStatus }}</span> Products
+                </CardTitle>
                 <CardDescription>
-                  Manage your products and view their sales performance.
+                  Manage and view your products
                 </CardDescription>
               </CardHeader>
 
-              <CardContent class="grid lg:grid-cols-2 gap-4">
+              <CardContent class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 <CardProduct v-for="(product, index) in products" :product="product" :key="'product-' + index" />
               </CardContent>
             </template>
             <template v-else>
               <CardHeader>
-                <CardTitle>No products found</CardTitle>
+                <CardTitle>
+                  No products found
+                </CardTitle>
                 <CardDescription>
-                  You can add a product or change some filters
+                  You can add a product or select other filters
                 </CardDescription>
               </CardHeader>
             </template>

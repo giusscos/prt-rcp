@@ -13,8 +13,6 @@ const units = ref<Units[]>([])
 const product = ref<InsertIngredient>({
     name: "",
     slug: "",
-    image_url: "",
-    description: "",
     status: "",
     quantity: 100,
     unit_id: 0
@@ -29,17 +27,6 @@ async function onSubmit() {
         isLoading.value = true
 
         product.value.slug = createSlug(product.value.name);
-
-        if (selectedFile.value) {
-            const { error: storageError } = await supabase
-                .storage
-                .from('ingredients')
-                .upload(product.value.slug, selectedFile.value);
-
-            if (storageError) throw storageError;
-
-            product.value.image_url = 'ingredients/' + product.value.slug;
-        }
 
         product.value.unit_id = Number(unitString.value)
 
@@ -111,7 +98,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <section class="container mx-auto">
+    <section class="sm:container mx-auto">
         <h2 class="text-4xl font-semibold">
             Edit product
         </h2>
@@ -130,19 +117,7 @@ onMounted(() => {
                 <Input id="name" type="text" placeholder="Pasta" v-model="product.name" required />
             </div>
 
-            <div class="grid gap-2">
-                <Label for="description">
-                    Description
-                </Label>
-                <Textarea id="description" placeholder="Very simple homemade pasta..." v-model="product.description" />
-            </div>
-
             <div class="flex items-center flex-wrap gap-4">
-                <div class="grid gap-1.5">
-                    <Label for="picture">Picture</Label>
-                    <input id="picture" type="file" @change="handleFileChange" />
-                </div>
-
                 <div class="grid gap-2">
                     <Label for="status">
                         Status

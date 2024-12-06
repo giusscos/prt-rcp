@@ -34,9 +34,7 @@ export interface Ingredient {
   user_id: number;
   nutritional_value: NutritionalValue;
   created_at: string;
-  description: string;
   status: string;
-  image_url: string;
   quantity: number;
   rating: number;
   unit_id: number;
@@ -47,9 +45,7 @@ export interface InsertIngredient {
   name: string;
   slug: string;
   // nutritional_value: string;
-  description: string;
   status: string;
-  image_url: string;
   quantity: number;
   unit_id: number;
 }
